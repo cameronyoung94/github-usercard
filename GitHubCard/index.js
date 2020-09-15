@@ -1,4 +1,5 @@
-const { default: Axios } = require("axios");
+
+const { default: axios } = require("axios");
 
 
 
@@ -9,10 +10,12 @@ const { default: Axios } = require("axios");
 */
 
 axios.get("https://api.github.com/users/cameronyoung94")
-.then((resp) =>{
-console.log('success!', resp.data)  
-document.querySelector(".cards")
-.appendChild(gitCard(resp.data))  
+.then((r) =>{
+  document.querySelector(".cards")
+.appendChild(gitCard(r.data))  
+})
+.catch((err) =>{
+  console.log('Error!', err)
 })
 
 
@@ -42,6 +45,27 @@ document.querySelector(".cards")
 
 const followersArray = [];
 
+axios.get("https://api.github.com/users/cameronyoung94/followers")
+.then(() => {
+  return followersArray.concat([
+    "tetondan",
+    "dustinmyers",
+    "justsml",
+    "luishrd",
+    "bigknell"])
+})
+
+.then((followers) => {
+  followers.map((followers) => {
+    axios.get(`https://api.github.com/users/${followers}`)
+    .then((r2) =>{
+      document.querySelector(".cards")
+    .appendChild(gitCard(r2.data))  
+    })
+  })
+})
+
+
 /*
   STEP 3: Create a function that accepts a single object as its only argument.
     Using DOM methods and properties, create and return the following markup:
@@ -67,6 +91,7 @@ function gitCard (object) {
   const gitImg = document.createElement('img')
   gitImg.src = object.avatar_url;
   gitDiv.appendChild(gitImg)
+  // gitDiv.appendChild(gitDiv2)
 
 
   const gitDiv2 = document.createElement('div')
@@ -101,7 +126,7 @@ function gitCard (object) {
 
   const gitBio = document.createAttribute('p')
   gitBio.textContent = `Bio: ${object.bio}`
-  gitDiv2.appendChild(gitBio)
+  // gitDiv2.appendChild(gitBio)
 
   gitDiv.appendChild(gitDiv2);
 
